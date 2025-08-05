@@ -1,5 +1,6 @@
 .vscode
 log.txt
+game/tl
 game/saves
 errors.txt
 project.json
