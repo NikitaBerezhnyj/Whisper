@@ -1,7 +1,6 @@
 default mood = 0
 
 init python:
-
     def get_mood():
         return mood
 

@@ -1,3 +1,3 @@
-define gg = Character(None, what_style="italic", what_color="#888888")
-define whisper = Character("Шепіт", color="#ffffff")
+define gg = Character(None)
+define whisper = Character("Шепіт")
 define other = Character("Інший")
