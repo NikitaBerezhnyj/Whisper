@@ -1251,7 +1251,7 @@ style skip_text:
 style skip_triangle:
     ## Ми повинні використовувати шрифт із гліфом МАЛЕНЬКИЙ ЧОРНИЙ ТРИКУТНИК
     ## ВПРАВО.
-    font "DejaVuSans.ttf"
+    font "Montserrat-VariableFont_wght.ttf"
 
 
 ## Екран сповіщень #############################################################

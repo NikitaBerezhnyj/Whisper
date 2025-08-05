@@ -1,7 +1,9 @@
 .vscode
 log.txt
 game/tl
+game/cache
 game/saves
+*.rpyc
 errors.txt
 project.json
 traceback.txt
