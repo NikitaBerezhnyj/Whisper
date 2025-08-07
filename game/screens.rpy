@@ -558,13 +558,17 @@ screen about():
         vbox:
 
             label "[config.name!t]"
-            text _("Версія [config.version!t]\n")
+            text _("Версія [config.version!t]")
+            text _("Автор: donthavenikname\n")
 
             ## «gui.about» зазвичай встановлюється в «options.rpy».
             if gui.about:
                 text "[gui.about!t]\n"
 
             text _("Зроблено з {a=https://www.renpy.org/}Ren'Py{/a} [renpy.version_only].\n\n[renpy.license!t]")
+            text _("Гру розроблено спеціально для {a=https://itch.io/jam/ukrainian-visual-novel-jam-6}Ukrainian Visual Novel Jam №6{/a}")
+            text _("Для створення гри було використано вільні асети:")
+            text _("{a=https://tribalmozart.itch.io/noir}Ren'py GUI Noir{/a} by {a=href=https://tribalmozart.itch.io/}Tribalmozart{/a}")
 
 
 style about_label is gui_label
