@@ -7,6 +7,7 @@ label day3:
 
     call family_dinner_scene
 
+    scene black
     $ next_day()
     jump day4
     return

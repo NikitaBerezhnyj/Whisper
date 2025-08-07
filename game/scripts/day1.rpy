@@ -9,6 +9,7 @@ label day1:
     call street_scene
     call shop_scene
 
+    scene black
     $ next_day()
     jump day2
     return

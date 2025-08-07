@@ -1,5 +1,6 @@
 label merge_ending_scene:
-    scene bg shop_inside
+    scene street with fade
+    show teacher
 
     whisper "We are Venom"
 

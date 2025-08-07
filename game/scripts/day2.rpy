@@ -7,6 +7,7 @@ label day2:
 
     call friends_meeting_scene
 
+    scene black
     $ next_day()
     jump day3
     return

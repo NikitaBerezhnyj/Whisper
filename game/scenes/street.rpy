@@ -1,5 +1,5 @@
 label street_scene:
-    scene bg street_day
+    scene street with fade
 
     gg "О, ми прийшли на вулицю."
     whisper "Сьогодні тут доволі тихо."
