@@ -12,8 +12,8 @@
 ##
 ## _() навколо рядка позначає його як придатний для перекладу.
 
-define config.name = _("Whisper")
-
+# define config.name = _("Whisper")
+define config.name = _("Шепіт")
 
 ## Визначає, чи заголовок, наведений вище, відображається на екрані головного
 ## меню. Встановіть значення False, щоб приховати назву.
@@ -23,7 +23,8 @@ define gui.show_name = True
 
 ## Версія гри.
 
-define config.version = "1.0"
+# define config.version = "1.0"
+define config.version = ""
 
 
 ## Текст, який розміщується на екрані інформації про гру. Поставте текст між

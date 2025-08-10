@@ -5,7 +5,9 @@ label day4:
     hide screen show_day
     window show
 
-    if get_mood() >= 10:
+    call ending_scene
+
+    if get_mood() >= 7:
         call merge_ending_scene
     else:
         call rejection_ending_scene
