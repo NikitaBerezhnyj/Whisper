@@ -1,0 +1,81 @@
+name: Build and Release Whisper
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-pc:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract version from options.rpy
+        id: get_version
+        run: |
+          VERSION=$(grep "define config.version" game/options.rpy | sed -E 's/.*"([^"]+)".*/\1/')
+          if [ -z "$VERSION" ]; then
+            VERSION="0.1.0-dev"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Detected project version: $VERSION"
+
+      - name: Ren'Py Build
+        uses: Mureza/renpy-build-action@v1
+        with:
+          package: "pc mac"
+
+      - name: Prepare artifacts
+        run: |
+          mkdir -p dist
+          mv *-pc.zip dist/ || true
+          mv *-mac.zip dist/ || true
+          mv *-market.zip dist/ || true
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: renpy-pc-build
+          path: dist/*
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build-pc
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: renpy-pc-build
+          path: ./artifacts
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ needs.build-pc.outputs.version }}"
+
+          gh release create "v$VERSION" \
+            --title "Release v$VERSION" \
+            --generate-notes || true
+
+          for file in ./artifacts/*; do
+            if [ -f "$file" ]; then
+              gh release upload "v$VERSION" "$file" --clobber
+            fi
+          done
