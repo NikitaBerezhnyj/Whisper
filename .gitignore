@@ -9,3 +9,4 @@ project.json
 traceback.txt
 .devnotes
 *~
+*.bak
