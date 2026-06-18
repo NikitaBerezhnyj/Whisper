@@ -42,9 +42,9 @@ jobs:
         env:
           SDL_VIDEODRIVER: dummy
         run: |
-          $RENPY_DIR/lib/py3-linux-x86_64/renpy $RENPY_DIR launcher distribute --package windows $GITHUB_WORKSPACE
-          $RENPY_DIR/lib/py3-linux-x86_64/renpy $RENPY_DIR launcher distribute --package linux $GITHUB_WORKSPACE
-          $RENPY_DIR/lib/py3-linux-x86_64/renpy $RENPY_DIR launcher distribute --package mac $GITHUB_WORKSPACE
+          $RENPY_DIR/lib/py3-linux-x86_64/renpy $RENPY_DIR/renpy.py $RENPY_DIR launcher distribute --package windows $GITHUB_WORKSPACE
+          $RENPY_DIR/lib/py3-linux-x86_64/renpy $RENPY_DIR/renpy.py $RENPY_DIR launcher distribute --package linux $GITHUB_WORKSPACE
+          $RENPY_DIR/lib/py3-linux-x86_64/renpy $RENPY_DIR/renpy.py $RENPY_DIR launcher distribute --package mac $GITHUB_WORKSPACE
 
       - name: Prepare and Rename Artifacts
         run: |
