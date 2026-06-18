@@ -12,7 +12,7 @@ on:
       - main
 
 jobs:
-  build-pc:
+  build:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.get_version.outputs.version }}
@@ -24,17 +24,12 @@ jobs:
       - name: Extract version from options.rpy
         id: get_version
         run: |
-          VERSION=$(grep "define config.version" game/options.rpy | sed -E "s/.*['\"]([^'\"]+)['\"].*/\1/")
+          VERSION=$(grep -m 1 "define config.version" game/options.rpy | sed -E "s/.*['\"]([^'\"]+)['\"].*/\1/")
           if [ -z "$VERSION" ]; then
             VERSION="0.1.0-dev"
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Detected project version: $VERSION"
-
-      - name: Install Zenity (Required for RenPy CLI)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y zenity
 
       - name: Download Ren'Py SDK
         run: |
@@ -43,17 +38,18 @@ jobs:
           tar -xf renpy-${RENPY_VERSION}-sdk.tar.bz2
           echo "RENPY_DIR=$GITHUB_WORKSPACE/renpy-${RENPY_VERSION}-sdk" >> $GITHUB_ENV
 
-      - name: Build Distributions (Windows, Linux, Mac)
+      - name: Build Distributions
+        env:
+          SDL_VIDEODRIVER: dummy
         run: |
-          $RENPY_DIR/renpy.sh $GITHUB_WORKSPACE distribute --package windows
-          $RENPY_DIR/renpy.sh $GITHUB_WORKSPACE distribute --package linux
-          $RENPY_DIR/renpy.sh $GITHUB_WORKSPACE distribute --package mac
+          python3 $RENPY_DIR/renpy.py $RENPY_DIR launcher distribute --package windows $GITHUB_WORKSPACE
+          python3 $RENPY_DIR/renpy.py $RENPY_DIR launcher distribute --package linux $GITHUB_WORKSPACE
+          python3 $RENPY_DIR/renpy.py $RENPY_DIR launcher distribute --package mac $GITHUB_WORKSPACE
 
       - name: Prepare and Rename Artifacts
         run: |
           mkdir -p dist
           VERSION="${{ steps.get_version.outputs.version }}"
-
           cp *-windows.zip dist/Whisper-v${VERSION}-Windows.zip || true
           cp *-linux.tar.bz2 dist/Whisper-v${VERSION}-Linux.tar.bz2 || true
           cp *-mac.zip dist/Whisper-v${VERSION}-MacOS.zip || true
@@ -66,7 +62,7 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: build-pc
+    needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
