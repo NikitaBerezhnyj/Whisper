@@ -24,29 +24,44 @@ jobs:
       - name: Extract version from options.rpy
         id: get_version
         run: |
-          VERSION=$(grep "define config.version" game/options.rpy | sed -E 's/.*"([^"]+)".*/\1/')
+          VERSION=$(grep "define config.version" game/options.rpy | sed -E "s/.*['\"]([^'\"]+)['\"].*/\1/")
           if [ -z "$VERSION" ]; then
             VERSION="0.1.0-dev"
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Detected project version: $VERSION"
 
-      - name: Ren'Py Build
-        uses: Mureza/renpy-build-action@v1
-        with:
-          package: "pc mac"
+      - name: Install Zenity (Required for RenPy CLI)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zenity
 
-      - name: Prepare artifacts
+      - name: Download Ren'Py SDK
+        run: |
+          RENPY_VERSION="8.2.2"
+          wget -q https://www.renpy.org/dl/${RENPY_VERSION}/renpy-${RENPY_VERSION}-sdk.tar.bz2
+          tar -xf renpy-${RENPY_VERSION}-sdk.tar.bz2
+          echo "RENPY_DIR=$GITHUB_WORKSPACE/renpy-${RENPY_VERSION}-sdk" >> $GITHUB_ENV
+
+      - name: Build Distributions (Windows, Linux, Mac)
+        run: |
+          $RENPY_DIR/renpy.sh $GITHUB_WORKSPACE distribute --package windows
+          $RENPY_DIR/renpy.sh $GITHUB_WORKSPACE distribute --package linux
+          $RENPY_DIR/renpy.sh $GITHUB_WORKSPACE distribute --package mac
+
+      - name: Prepare and Rename Artifacts
         run: |
           mkdir -p dist
-          mv *-pc.zip dist/ || true
-          mv *-mac.zip dist/ || true
-          mv *-market.zip dist/ || true
+          VERSION="${{ steps.get_version.outputs.version }}"
+
+          cp *-windows.zip dist/Whisper-v${VERSION}-Windows.zip || true
+          cp *-linux.tar.bz2 dist/Whisper-v${VERSION}-Linux.tar.bz2 || true
+          cp *-mac.zip dist/Whisper-v${VERSION}-MacOS.zip || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: renpy-pc-build
+          name: whisper-pc-builds
           path: dist/*
 
   release:
@@ -61,7 +76,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: renpy-pc-build
+          name: whisper-pc-builds
           path: ./artifacts
 
       - name: Create or update GitHub Release
@@ -71,7 +86,7 @@ jobs:
           VERSION="${{ needs.build-pc.outputs.version }}"
 
           gh release create "v$VERSION" \
-            --title "Release v$VERSION" \
+            --title "Whisper v$VERSION" \
             --generate-notes || true
 
           for file in ./artifacts/*; do
