@@ -22,8 +22,6 @@ define gui.show_name = True
 
 
 ## Версія гри.
-
-# define config.version = "1.0"
 define config.version = "1.0.0"
 
 
